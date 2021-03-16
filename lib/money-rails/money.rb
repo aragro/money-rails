@@ -2,6 +2,8 @@ require "active_support/core_ext/module/aliasing.rb"
 require "active_support/core_ext/hash/reverse_merge.rb"
 
 class Money
+  attr_accessor :precision
+
   class << self
     alias_method :orig_default_formatting_rules, :default_formatting_rules
 
@@ -25,5 +27,17 @@ class Money
   # This is expected to be called by ActiveSupport when calling as_json an Money object
   def to_hash
     { cents: cents, currency_iso: currency.iso_code.to_s }
+  end
+
+  private
+
+  def return_value(value)
+    if Money.infinite_precision
+      value
+    elsif precision.present?
+      value.round(precision, self.class.rounding_mode)
+    else
+      value.round(0, self.class.rounding_mode).to_i
+    end
   end
 end

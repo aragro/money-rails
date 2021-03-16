@@ -202,6 +202,7 @@ module MoneyRails
         elsif amount.present?
           # If amount is NOT nil (or empty string) load the amount in a Money
           amount = Money.new(amount, attr_currency)
+          amount.precision = options[:precision]
 
           # Cache the value (it may be nil)
           result = instance_variable_set("@#{name}", amount)
